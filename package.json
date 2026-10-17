@@ -1,0 +1,23 @@
+{
+  "name": "juicebox-view",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aidenlab/juicebox-view.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aidenlab/juicebox-view/issues"
+  },
+  "homepage": "https://github.com/aidenlab/juicebox-view#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}
