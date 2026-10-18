@@ -4,7 +4,7 @@ import 'juicebox.js/dist/css/juicebox.css'
 import 'font-awesome/css/font-awesome.css'
 import './styles/page.scss'
 import { attachRemote } from '@aidenlab/juicebox-remote'
-import { createHeader, showRoom } from './header.js'
+import { createHeader, showRoom, showToolCall } from './header.js'
 import { followRoom } from './roomStatus.js'
 
 const page = document.querySelector('.page')
@@ -76,5 +76,6 @@ if (room) {
     url: import.meta.env.VITE_WS_URL,
     room,
     onStatus: (status) => showRoom(header, roomStatus(status, remote.room)),
+    onToolCall: (name) => showToolCall(header, name),
   })
 }

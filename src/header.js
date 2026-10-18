@@ -4,6 +4,12 @@ const NOT_IN_A_ROOM = 'Not in a room. Ask Claude to open Juicebox.'
 /** How long Copy says Copied, in milliseconds. */
 const COPIED_FOR = 1500
 
+/** How long the Room indicator pulses after a tool call, in milliseconds; one pulse in page.scss. */
+const PULSE_FOR = 600
+
+/** Each Header's pending end of its Room indicator's pulse. */
+const pulseTimers = new WeakMap()
+
 /**
  * The Header: the strip above juicebox.js holding what the Page shows about itself.
  * It starts in the no-Room state, its Room indicator grey.
@@ -16,6 +22,7 @@ export function createHeader() {
 
   const indicator = document.createElement('span')
   indicator.className = 'room-indicator'
+  // Hidden from assistive technology until a tool call gives it something to say.
   indicator.setAttribute('aria-hidden', 'true')
 
   const status = document.createElement('p')
@@ -66,8 +73,28 @@ export function createHeader() {
  * @param {import('./roomStatus.js').RoomStatus} view
  */
 export function showRoom(header, { indicator, text, joinLink }) {
-  header.querySelector('.room-indicator').className = `room-indicator room-indicator--${indicator}`
+  const dot = header.querySelector('.room-indicator')
+  dot.classList.remove('room-indicator--connecting', 'room-indicator--joined', 'room-indicator--expired')
+  dot.classList.add(`room-indicator--${indicator}`)
   header.querySelector('.header__status').textContent = text
   header.querySelector('.header__join').hidden = !joinLink
   header.querySelector('.header__join-link').value = joinLink ?? ''
+}
+
+/**
+ * Shows that the model ran a tool against the Page: the Room indicator pulses once.
+ *
+ * @param {HTMLElement} header from createHeader
+ * @param {string} name the tool's name
+ */
+export function showToolCall(header, name) {
+  const indicator = header.querySelector('.room-indicator')
+  const lastTool = `Last tool: ${name}`
+  indicator.removeAttribute('aria-hidden')
+  indicator.setAttribute('role', 'img')
+  indicator.setAttribute('aria-label', lastTool)
+  indicator.title = lastTool
+  indicator.classList.add('room-indicator--pulsing')
+  clearTimeout(pulseTimers.get(header))
+  pulseTimers.set(header, setTimeout(() => indicator.classList.remove('room-indicator--pulsing'), PULSE_FOR))
 }
