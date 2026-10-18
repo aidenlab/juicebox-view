@@ -3,6 +3,7 @@
 
 $status-colour: #5f6b7a;
 $border-colour: #d0d7de;
+$button-colour: #f6f8fa;
 $indicator-off-colour: #8c959f;
 $indicator-amber-colour: #d4a72c;
 $indicator-green-colour: #2da44e;
@@ -43,6 +44,40 @@ body {
     font-family: $font;
     font-size: $font-size;
     color: $status-colour;
+  }
+
+  &__join {
+    display: flex;
+    flex: 0 1 360px;
+    gap: 4px;
+    min-width: 0;
+
+    // display: flex would otherwise outrank the hidden attribute.
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__join-link {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 4px;
+    border: 1px solid $border-colour;
+    border-radius: 4px;
+    font-family: $font;
+    font-size: $font-size;
+    color: $status-colour;
+  }
+
+  &__copy {
+    flex: none;
+    padding: 2px 8px;
+    border: 1px solid $border-colour;
+    border-radius: 4px;
+    background: $button-colour;
+    font-family: $font;
+    font-size: $font-size;
+    cursor: pointer;
   }
 }
 

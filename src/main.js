@@ -15,7 +15,7 @@ page.prepend(header)
 
 // A Join link's Page is connecting from the start, not in no Room while juicebox.js starts.
 const room = new URLSearchParams(location.search).get('room')
-const roomStatus = followRoom()
+const roomStatus = followRoom(location.href)
 if (room) showRoom(header, roomStatus('connecting', undefined))
 
 // ENCODE and the other challenged hosts are read through the dev server's proxy.
