@@ -38,18 +38,19 @@ export function createHeader() {
   copy.className = 'header__copy'
   copy.type = 'button'
   copy.textContent = 'Copy'
-  let copied
+  let copiedTimer
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(link.value)
     } catch {
       // Refused the clipboard, or given none outside a secure context: the person copies it.
+      link.focus()
       link.select()
       return
     }
     copy.textContent = 'Copied'
-    clearTimeout(copied)
-    copied = setTimeout(() => { copy.textContent = 'Copy' }, COPIED_FOR)
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => { copy.textContent = 'Copy' }, COPIED_FOR)
   })
 
   join.append(link, copy)

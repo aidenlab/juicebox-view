@@ -78,6 +78,7 @@ describe('Header', () => {
 
     copyButton(header).click()
     await vi.waitFor(() => expect([field.selectionStart, field.selectionEnd]).toEqual([0, LINK.length]))
+    expect(document.activeElement).toBe(field)
     expect(copyButton(header)).not.toBeUndefined()
     header.remove()
   })
