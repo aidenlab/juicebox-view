@@ -8,7 +8,6 @@ $indicator-off-colour: #8c959f;
 $indicator-amber-colour: #d4a72c;
 $indicator-green-colour: #2da44e;
 $indicator-red-colour: #cf222e;
-// One pulse of the Room indicator; header.js holds it as PULSE_FOR.
 $pulse-duration: 600ms;
 $font: system-ui, sans-serif;
 $font-size: 12px;
@@ -102,7 +101,7 @@ body {
     background: $indicator-red-colour;
   }
 
-  // Held for one pulse after each tool call, so a burst keeps pulsing rather than queueing.
+  // header.js takes the class away at the end of a cycle with no tool call in it.
   &--pulsing {
     animation: room-indicator-pulse $pulse-duration ease-in-out infinite;
   }

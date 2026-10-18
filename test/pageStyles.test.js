@@ -7,18 +7,26 @@ const sheet = new CSSStyleSheet()
 sheet.replaceSync(css)
 const rules = [...sheet.cssRules]
 
-/** The animation a rule list gives the pulsing Room indicator, or undefined. */
+/**
+ * The animation a rule list gives the pulsing Room indicator, or undefined.
+ *
+ * @param {CSSRuleList} ruleList
+ */
 function pulseAnimation(ruleList) {
   const rule = [...ruleList].find((r) => r.selectorText === '.room-indicator--pulsing')
   return rule && (rule.style.animationName || rule.style.animation.split(' ')[0])
 }
 
-/** The text of the @keyframes rule with the given name. */
+/**
+ * The text of the @keyframes rule with the given name.
+ *
+ * @param {string} name
+ */
 function keyframes(name) {
   return rules.find((r) => r instanceof CSSKeyframesRule && r.name === name)?.cssText
 }
 
-describe('Room indicator pulse', () => {
+describe('Page styles: the Room indicator\'s pulse', () => {
   it('moves the dot', () => {
     expect(keyframes(pulseAnimation(rules))).toMatch(/transform/)
   })

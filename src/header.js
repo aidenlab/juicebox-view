@@ -4,11 +4,8 @@ const NOT_IN_A_ROOM = 'Not in a room. Ask Claude to open Juicebox.'
 /** How long Copy says Copied, in milliseconds. */
 const COPIED_FOR = 1500
 
-/** How long the Room indicator pulses after a tool call, in milliseconds; one pulse in page.scss. */
-const PULSE_FOR = 600
-
-/** Each Header's pending end of its Room indicator's pulse. */
-const pulseTimers = new WeakMap()
+/** Room indicators that a tool call reached mid-pulse, owed one more pulse. */
+const pulseAgain = new WeakSet()
 
 /**
  * The Header: the strip above juicebox.js holding what the Page shows about itself.
@@ -24,6 +21,12 @@ export function createHeader() {
   indicator.className = 'room-indicator'
   // Hidden from assistive technology until a tool call gives it something to say.
   indicator.setAttribute('aria-hidden', 'true')
+  // A pulse ends with its cycle, so the dot never snaps back mid-pulse; a call during the
+  // cycle runs one more, so a burst keeps pulsing rather than queueing.
+  indicator.addEventListener('animationiteration', () => {
+    if (pulseAgain.delete(indicator)) return
+    indicator.classList.remove('room-indicator--pulsing')
+  })
 
   const status = document.createElement('p')
   status.className = 'header__status'
@@ -94,7 +97,6 @@ export function showToolCall(header, name) {
   indicator.setAttribute('role', 'img')
   indicator.setAttribute('aria-label', lastTool)
   indicator.title = lastTool
-  indicator.classList.add('room-indicator--pulsing')
-  clearTimeout(pulseTimers.get(header))
-  pulseTimers.set(header, setTimeout(() => indicator.classList.remove('room-indicator--pulsing'), PULSE_FOR))
+  if (indicator.classList.contains('room-indicator--pulsing')) pulseAgain.add(indicator)
+  else indicator.classList.add('room-indicator--pulsing')
 }

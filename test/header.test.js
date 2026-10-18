@@ -3,6 +3,11 @@ import { createHeader, showRoom, showToolCall } from '../src/header.js'
 
 const LINK = 'http://localhost:5173/?room=k3x9q2'
 
+/** Ends one cycle of the Room indicator's pulse, as the browser does. @param {HTMLElement} indicator */
+function endPulseCycle(indicator) {
+  indicator.dispatchEvent(new Event('animationiteration'))
+}
+
 /** @param {HTMLElement} header */
 function copyButton(header) {
   return [...header.querySelectorAll('button')].find((button) => button.textContent === 'Copy')
@@ -94,8 +99,7 @@ describe('Header', () => {
     header.remove()
   })
 
-  it('a tool call makes the Room indicator pulse once, briefly', async () => {
-    vi.useFakeTimers()
+  it('a tool call makes the Room indicator pulse once, briefly', () => {
     const header = createHeader()
     showRoom(header, { indicator: 'joined', text: 'Joined room k3x9q2', joinLink: LINK })
     const indicator = header.querySelector('.room-indicator')
@@ -103,7 +107,7 @@ describe('Header', () => {
     showToolCall(header, 'go_to_locus')
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
 
-    await vi.advanceTimersByTimeAsync(1000)
+    endPulseCycle(indicator)
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
     expect(indicator.classList.contains('room-indicator--joined')).toBe(true)
   })
@@ -126,7 +130,6 @@ describe('Header', () => {
   })
 
   it('the Room changing mid-pulse changes the Room indicator\'s colour without cutting the pulse short', () => {
-    vi.useFakeTimers()
     const header = createHeader()
     const indicator = header.querySelector('.room-indicator')
 
@@ -136,19 +139,15 @@ describe('Header', () => {
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
   })
 
-  it('a burst of tool calls keeps the Room indicator pulsing, then stops with no backlog of pulses', async () => {
-    vi.useFakeTimers()
+  it('a burst of tool calls keeps the Room indicator pulsing, then stops at the end of a pulse with no backlog', () => {
     const header = createHeader()
     const indicator = header.querySelector('.room-indicator')
 
-    for (let call = 0; call < 5; call++) {
-      showToolCall(header, 'go_to_locus')
-      await vi.advanceTimersByTimeAsync(100)
-      expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
-    }
-
-    // Five queued pulses would still be running a second after the last call.
-    await vi.advanceTimersByTimeAsync(1000)
+    // Five calls within one pulse earn it one more pulse, not five.
+    for (let call = 0; call < 5; call++) showToolCall(header, 'go_to_locus')
+    endPulseCycle(indicator)
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
+    endPulseCycle(indicator)
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
   })
 })
