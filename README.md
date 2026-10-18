@@ -35,7 +35,7 @@ One-time setup:
 
 ```sh
 npx playwright install chromium   # Playwright's headless Chromium
-git clone https://github.com/aidenlab/juicebox-mcp.git ../juicebox-mcp
+git clone https://github.com/weiszd/juicebox-mcp.git ../juicebox-mcp
 (cd ../juicebox-mcp && npm install)
 ```
 
