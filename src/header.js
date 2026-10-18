@@ -4,6 +4,9 @@ const NOT_IN_A_ROOM = 'Not in a room. Ask Claude to open Juicebox.'
 /** How long Copy says Copied, in milliseconds. */
 const COPIED_FOR = 1500
 
+/** Room indicators that a tool call reached mid-pulse, owed one more pulse. */
+const pulseAgain = new WeakSet()
+
 /**
  * The Header: the strip above juicebox.js holding what the Page shows about itself.
  * It starts in the no-Room state, its Room indicator grey.
@@ -16,7 +19,14 @@ export function createHeader() {
 
   const indicator = document.createElement('span')
   indicator.className = 'room-indicator'
+  // Hidden from assistive technology until a tool call gives it something to say.
   indicator.setAttribute('aria-hidden', 'true')
+  // A pulse ends with its cycle, so the dot never snaps back mid-pulse; a call during the
+  // cycle runs one more, so a burst keeps pulsing rather than queueing.
+  indicator.addEventListener('animationiteration', () => {
+    if (pulseAgain.delete(indicator)) return
+    indicator.classList.remove('room-indicator--pulsing')
+  })
 
   const status = document.createElement('p')
   status.className = 'header__status'
@@ -66,8 +76,27 @@ export function createHeader() {
  * @param {import('./roomStatus.js').RoomStatus} view
  */
 export function showRoom(header, { indicator, text, joinLink }) {
-  header.querySelector('.room-indicator').className = `room-indicator room-indicator--${indicator}`
+  const dot = header.querySelector('.room-indicator')
+  dot.classList.remove('room-indicator--connecting', 'room-indicator--joined', 'room-indicator--expired')
+  dot.classList.add(`room-indicator--${indicator}`)
   header.querySelector('.header__status').textContent = text
   header.querySelector('.header__join').hidden = !joinLink
   header.querySelector('.header__join-link').value = joinLink ?? ''
+}
+
+/**
+ * Shows that the model ran a tool against the Page: the Room indicator pulses once.
+ *
+ * @param {HTMLElement} header from createHeader
+ * @param {string} name the tool's name
+ */
+export function showToolCall(header, name) {
+  const indicator = header.querySelector('.room-indicator')
+  const lastTool = `Last tool: ${name}`
+  indicator.removeAttribute('aria-hidden')
+  indicator.setAttribute('role', 'img')
+  indicator.setAttribute('aria-label', lastTool)
+  indicator.title = lastTool
+  if (indicator.classList.contains('room-indicator--pulsing')) pulseAgain.add(indicator)
+  else indicator.classList.add('room-indicator--pulsing')
 }

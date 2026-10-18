@@ -8,6 +8,7 @@ $indicator-off-colour: #8c959f;
 $indicator-amber-colour: #d4a72c;
 $indicator-green-colour: #2da44e;
 $indicator-red-colour: #cf222e;
+$pulse-duration: 600ms;
 $font: system-ui, sans-serif;
 $font-size: 12px;
 
@@ -98,5 +99,29 @@ body {
 
   &--expired {
     background: $indicator-red-colour;
+  }
+
+  // header.js takes the class away at the end of a cycle with no tool call in it.
+  &--pulsing {
+    animation: room-indicator-pulse $pulse-duration ease-in-out infinite;
+  }
+}
+
+@keyframes room-indicator-pulse {
+  50% {
+    transform: scale(1.75);
+  }
+}
+
+// Without motion, the pulse brightens the dot in place.
+@media (prefers-reduced-motion: reduce) {
+  .room-indicator--pulsing {
+    animation-name: room-indicator-glow;
+  }
+}
+
+@keyframes room-indicator-glow {
+  50% {
+    filter: brightness(1.6);
   }
 }

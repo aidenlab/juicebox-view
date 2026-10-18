@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { createHeader, showRoom } from '../src/header.js'
+import { createHeader, showRoom, showToolCall } from '../src/header.js'
 
 const LINK = 'http://localhost:5173/?room=k3x9q2'
+
+/** Ends one cycle of the Room indicator's pulse, as the browser does. @param {HTMLElement} indicator */
+function endPulseCycle(indicator) {
+  indicator.dispatchEvent(new Event('animationiteration'))
+}
 
 /** @param {HTMLElement} header */
 function copyButton(header) {
@@ -92,5 +97,57 @@ describe('Header', () => {
     field.click()
     expect([field.selectionStart, field.selectionEnd]).toEqual([0, LINK.length])
     header.remove()
+  })
+
+  it('a tool call makes the Room indicator pulse once, briefly', () => {
+    const header = createHeader()
+    showRoom(header, { indicator: 'joined', text: 'Joined room k3x9q2', joinLink: LINK })
+    const indicator = header.querySelector('.room-indicator')
+
+    showToolCall(header, 'go_to_locus')
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
+
+    endPulseCycle(indicator)
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
+    expect(indicator.classList.contains('room-indicator--joined')).toBe(true)
+  })
+
+  it('the Room indicator\'s tooltip and accessible label name the last tool run', () => {
+    const header = createHeader()
+    document.body.append(header)
+    const indicator = header.querySelector('.room-indicator')
+
+    showToolCall(header, 'load_map')
+    showToolCall(header, 'go_to_locus')
+    expect(indicator.title).toBe('Last tool: go_to_locus')
+    expect(indicator.getAttribute('aria-hidden')).toBeNull()
+    expect(indicator.getAttribute('role')).toBe('img')
+    expect(indicator.getAttribute('aria-label')).toBe('Last tool: go_to_locus')
+
+    showRoom(header, { indicator: 'joined', text: 'Joined room k3x9q2', joinLink: LINK })
+    expect(indicator.title).toBe('Last tool: go_to_locus')
+    header.remove()
+  })
+
+  it('the Room changing mid-pulse changes the Room indicator\'s colour without cutting the pulse short', () => {
+    const header = createHeader()
+    const indicator = header.querySelector('.room-indicator')
+
+    showToolCall(header, 'go_to_locus')
+    showRoom(header, { indicator: 'connecting', text: 'Reconnecting…', joinLink: LINK })
+    expect(indicator.classList.contains('room-indicator--connecting')).toBe(true)
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
+  })
+
+  it('a burst of tool calls keeps the Room indicator pulsing, then stops at the end of a pulse with no backlog', () => {
+    const header = createHeader()
+    const indicator = header.querySelector('.room-indicator')
+
+    // Five calls within one pulse earn it one more pulse, not five.
+    for (let call = 0; call < 5; call++) showToolCall(header, 'go_to_locus')
+    endPulseCycle(indicator)
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
+    endPulseCycle(indicator)
+    expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
   })
 })
