@@ -11,7 +11,10 @@ export default defineConfig(async ({ command }) => ({
     strictPort: true,
     open: true,
     proxy: {
-      '/ws': { target: 'ws://localhost:8787', ws: true },
+      // changeOrigin sends the Worker its own Host. With the Page's, wrangler dev takes the
+      // request for same-origin and rewrites its Origin to the Worker's route, which the
+      // Worker's ALLOWED_ORIGINS refuses.
+      '/ws': { target: 'ws://localhost:8787', ws: true, changeOrigin: true },
     },
   },
 }))

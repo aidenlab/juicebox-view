@@ -13,6 +13,11 @@ const panelsElement = document.querySelector('.page__panels')
 const header = createHeader()
 page.prepend(header)
 
+// A Join link's Page is connecting from the start, not in no Room while juicebox.js starts.
+const room = new URLSearchParams(location.search).get('room')
+const roomStatus = followRoom()
+if (room) showRoom(header, roomStatus('connecting', undefined))
+
 // ENCODE and the other challenged hosts are read through the dev server's proxy.
 // Imported only in dev, so a production build never resolves it.
 if (import.meta.env.DEV) {
@@ -64,9 +69,7 @@ await juicebox.init(panelsElement, {})
 
 // A Join link joins its Room; after juicebox.init, so that a Snapshot link opened with it only
 // seeds an empty Room. With no ?room= the Page attaches no Remote.
-const room = new URLSearchParams(location.search).get('room')
 if (room) {
-  const roomStatus = followRoom()
   const remote = attachRemote({
     hic: juicebox,
     container: panelsElement,
