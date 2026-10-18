@@ -1,0 +1,52 @@
+// Only classes this project writes live here, named with BEM. juicebox.js styles
+// its own DOM; nothing below reaches into it.
+
+$status-colour: #5f6b7a;
+$border-colour: #d0d7de;
+$indicator-off-colour: #8c959f;
+$font: system-ui, sans-serif;
+$font-size: 12px;
+
+body {
+  margin: 0;
+  // juicebox.js draws on white whatever the system theme.
+  background: #fff;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  // The Page is the window and never scrolls. juicebox.js 4.11.0 lays its y-axis whole-genome
+  // container out below an empty Panel, past the window's bottom edge; this clips it.
+  overflow: hidden;
+
+  &__panels {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-bottom: 1px solid $border-colour;
+
+  &__status {
+    margin: 0;
+    font-family: $font;
+    font-size: $font-size;
+    color: $status-colour;
+  }
+}
+
+.room-indicator {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $indicator-off-colour;
+}
