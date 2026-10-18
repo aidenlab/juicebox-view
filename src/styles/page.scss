@@ -4,6 +4,9 @@
 $status-colour: #5f6b7a;
 $border-colour: #d0d7de;
 $indicator-off-colour: #8c959f;
+$indicator-amber-colour: #d4a72c;
+$indicator-green-colour: #2da44e;
+$indicator-red-colour: #cf222e;
 $font: system-ui, sans-serif;
 $font-size: 12px;
 
@@ -49,4 +52,16 @@ body {
   height: 8px;
   border-radius: 50%;
   background: $indicator-off-colour;
+
+  &--connecting {
+    background: $indicator-amber-colour;
+  }
+
+  &--joined {
+    background: $indicator-green-colour;
+  }
+
+  &--expired {
+    background: $indicator-red-colour;
+  }
 }

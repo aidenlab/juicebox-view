@@ -23,3 +23,14 @@ export function createHeader() {
   header.append(indicator, status)
   return header
 }
+
+/**
+ * Shows the Room in the Header: the Room indicator's colour and the status text.
+ *
+ * @param {HTMLElement} header from createHeader
+ * @param {import('./roomStatus.js').RoomStatus} view
+ */
+export function showRoom(header, { indicator, text }) {
+  header.querySelector('.room-indicator').className = `room-indicator room-indicator--${indicator}`
+  header.querySelector('.header__status').textContent = text
+}
