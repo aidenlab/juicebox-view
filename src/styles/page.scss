@@ -53,9 +53,10 @@ body {
     gap: 4px;
     min-width: 0;
 
-    // display: flex would otherwise outrank the hidden attribute.
+    // display: flex would otherwise outrank the hidden attribute. Hidden, it keeps its height,
+    // so the Header is as tall out of a Room as in one and the Panels sized at start still fit.
     &[hidden] {
-      display: none;
+      visibility: hidden;
     }
   }
 
