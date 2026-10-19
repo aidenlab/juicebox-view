@@ -42,9 +42,11 @@ function juiceboxLength(name) {
 }
 
 /**
- * Sizes every Panel's contact map so that one Panel fits the space juicebox.js is given:
- * that space less what juicebox.js draws around the map. It is set on the document rather
- * than in the Panel's config, so that a restored Snapshot link, whose config replaces
+ * Sizes every Panel's contact map as the largest square with which one Panel fits the space
+ * juicebox.js is given: that space less what juicebox.js draws around the map. The map is
+ * square because juicebox.js shows both axes at one resolution, so a map of any other shape
+ * shows a longer stretch of the genome on one axis than the other. It is set on the document
+ * rather than in the Panel's config, so that a restored Snapshot link, whose config replaces
  * the Page's, is sized the same.
  */
 function sizePanels() {
@@ -53,11 +55,12 @@ function sizePanels() {
   const navBar = 2 * (juiceboxLength('--nav-bar-label-height') + juiceboxLength('--nav-bar-widget-container-height') + 2 * juiceboxLength('--nav-bar-widget-container-margin'))
 
   const { clientWidth, clientHeight } = panelsElement
-  const width = Math.max(clientWidth - scrollbar - axis - PANEL_FRAME, MIN_MAP_SIZE)
-  const height = Math.max(clientHeight - scrollbar - axis - navBar - PANEL_FRAME, MIN_MAP_SIZE)
+  const width = clientWidth - scrollbar - axis - PANEL_FRAME
+  const height = clientHeight - scrollbar - axis - navBar - PANEL_FRAME
+  const size = Math.max(Math.min(width, height), MIN_MAP_SIZE)
 
-  document.documentElement.style.setProperty('--hic-viewport-width', `${width}px`)
-  document.documentElement.style.setProperty('--hic-viewport-height', `${height}px`)
+  document.documentElement.style.setProperty('--hic-viewport-width', `${size}px`)
+  document.documentElement.style.setProperty('--hic-viewport-height', `${size}px`)
 }
 
 sizePanels()
