@@ -77,14 +77,18 @@ describe('round trip', () => {
     await expect.poll(() => locus.inputValue()).toBe('chr8:127,000,001-129,000,000 chr8:127,000,001-129,000,000')
   })
 
-  it("the Panel's contact map is square and the Panel fits the window", async () => {
-    const window = page.viewportSize()
-    const { map, panel } = await page.evaluate(() => ({
-      map: document.querySelector('.hic-root [id$="-viewport"]').getBoundingClientRect().toJSON(),
-      panel: document.querySelector('.hic-root').getBoundingClientRect().toJSON(),
-    }))
-    expect(map.width).toBe(map.height)
-    expect(panel.right).toBeLessThanOrEqual(window.width)
-    expect(panel.bottom).toBeLessThanOrEqual(window.height)
+  it("the Panel's contact map is juicebox.js's default 640 x 640", async () => {
+    const map = await page.evaluate(() => document.querySelector('.hic-root [id$="-viewport"]').getBoundingClientRect().toJSON())
+    expect(map.width).toBe(640)
+    expect(map.height).toBe(640)
+  })
+
+  it('the Panels scroll to the bottom of a Panel taller than the window', async () => {
+    const { panel, window } = await page.evaluate(() => {
+      const panels = document.querySelector('.page__panels')
+      panels.scrollTop = panels.scrollHeight
+      return { panel: document.querySelector('.hic-root').getBoundingClientRect().toJSON(), window: innerHeight }
+    })
+    expect(panel.bottom).toBeLessThanOrEqual(window)
   })
 })

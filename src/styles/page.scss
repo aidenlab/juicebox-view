@@ -22,13 +22,14 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  // The Page is the window and never scrolls. juicebox.js 4.11.0 lays its y-axis whole-genome
-  // container out below an empty Panel, past the window's bottom edge; this clips it.
-  overflow: hidden;
 
+  // The Panels scroll under the Header when the window is smaller than a Panel. Until a Panel
+  // loads a map, juicebox.js 4.11.0 lays its y-axis whole-genome container out below it, so an
+  // empty Panel scrolls on past its bottom edge.
   &__panels {
     flex: 1;
     min-height: 0;
+    overflow: auto;
   }
 }
 
@@ -54,7 +55,7 @@ body {
     min-width: 0;
 
     // display: flex would otherwise outrank the hidden attribute. Hidden, it keeps its height,
-    // so the Header is as tall out of a Room as in one and the Panels sized at start still fit.
+    // so the Header is as tall out of a Room as in one.
     &[hidden] {
       visibility: hidden;
     }

@@ -25,46 +25,6 @@ if (import.meta.env.DEV) {
   juicebox.setUrlMapper(devMapUrl)
 }
 
-// juicebox.css 4.11.0 gives .hic-root a 3px border and a 4px margin on every side.
-const PANEL_FRAME = 2 * (3 + 4)
-
-// The smallest contact map the Page asks for, however little room the window leaves.
-const MIN_MAP_SIZE = 100
-
-/**
- * A juicebox.js length from its stylesheet's custom properties, in pixels.
- *
- * @param {string} name
- * @returns {number}
- */
-function juiceboxLength(name) {
-  return parseInt(getComputedStyle(document.documentElement).getPropertyValue(name))
-}
-
-/**
- * Sizes every Panel's contact map as the largest square with which one Panel fits the space
- * juicebox.js is given: that space less what juicebox.js draws around the map. The map is
- * square because juicebox.js shows both axes at one resolution, so a map of any other shape
- * shows a longer stretch of the genome on one axis than the other. It is set on the document
- * rather than in the Panel's config, so that a restored Snapshot link, whose config replaces
- * the Page's, is sized the same.
- */
-function sizePanels() {
-  const scrollbar = juiceboxLength('--hic-scrollbar-height')
-  const axis = juiceboxLength('--hic-axis-height')
-  const navBar = 2 * (juiceboxLength('--nav-bar-label-height') + juiceboxLength('--nav-bar-widget-container-height') + 2 * juiceboxLength('--nav-bar-widget-container-margin'))
-
-  const { clientWidth, clientHeight } = panelsElement
-  const width = clientWidth - scrollbar - axis - PANEL_FRAME
-  const height = clientHeight - scrollbar - axis - navBar - PANEL_FRAME
-  const size = Math.max(Math.min(width, height), MIN_MAP_SIZE)
-
-  document.documentElement.style.setProperty('--hic-viewport-width', `${size}px`)
-  document.documentElement.style.setProperty('--hic-viewport-height', `${size}px`)
-}
-
-sizePanels()
-
 // juicebox.js reads a Snapshot link's ?session= itself; with none, it shows one empty Panel.
 // The config is empty because juicebox-mcp's tools need nothing in it: each Panel takes its
 // genome from the map it loads, and a gene name in a locus is looked up by that genome.
