@@ -72,8 +72,19 @@ describe('round trip', () => {
     const indicator = page.locator('.room-indicator')
     expect(await indicator.getAttribute('aria-label')).toBe('Last tool: goto_locus')
 
-    // juicebox.js's locus box shows both axes; the x axis runs on to fill the Panel's width.
+    // juicebox.js's locus box shows both axes; the contact map is square, so they are the same.
     const locus = page.locator('.hic-chromosome-goto-container input')
-    await expect.poll(() => locus.inputValue()).toMatch(/^chr8:127,000,001-[\d,]+ chr8:127,000,001-129,000,000$/)
+    await expect.poll(() => locus.inputValue()).toBe('chr8:127,000,001-129,000,000 chr8:127,000,001-129,000,000')
+  })
+
+  it("the Panel's contact map is square and the Panel fits the window", async () => {
+    const window = page.viewportSize()
+    const { map, panel } = await page.evaluate(() => ({
+      map: document.querySelector('.hic-root [id$="-viewport"]').getBoundingClientRect().toJSON(),
+      panel: document.querySelector('.hic-root').getBoundingClientRect().toJSON(),
+    }))
+    expect(map.width).toBe(map.height)
+    expect(panel.right).toBeLessThanOrEqual(window.width)
+    expect(panel.bottom).toBeLessThanOrEqual(window.height)
   })
 })
