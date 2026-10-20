@@ -15,8 +15,12 @@ One juicebox.js contact-map viewer inside a Page. A Page holds one or more, orde
 _Avoid_: browser, map, view
 
 **Header**:
-The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, and the Room's Join link. The only part of the Page that is not juicebox.js.
+The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, the Room's Join link and, on a deployed dev build, its build label. The only part of the Page that is not juicebox.js.
 _Avoid_: navbar, toolbar, controls, room widget
+
+**Build label**:
+The text at the right end of a deployed dev build's Header: its build number (the Page's git commit count and short hash, `-dirty` when deployed from a working copy) and the MCP connector URL of the juicebox-mcp Worker it pairs with. Baked in by juicebox-mcp's deploy script; `npm run dev` shows none.
+_Avoid_: version, footer
 
 **Room indicator**:
 The small coloured dot in the Header showing whether the Page is in a Room, and pulsing when the model runs a tool against the Page.

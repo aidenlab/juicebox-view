@@ -72,6 +72,16 @@ body {
     color: $status-colour;
   }
 
+  // A deployed dev build's label, at the right end; selectable, so the MCP URL can be copied.
+  &__build {
+    flex: none;
+    margin: 0 0 0 auto;
+    font-family: $font;
+    font-size: $font-size;
+    color: $status-colour;
+    user-select: text;
+  }
+
   &__copy {
     flex: none;
     padding: 2px 8px;

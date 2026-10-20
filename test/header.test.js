@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { createHeader, showRoom, showToolCall } from '../src/header.js'
+import { buildLabel, createHeader, showRoom, showToolCall } from '../src/header.js'
 
 const LINK = 'http://localhost:5173/?room=k3x9q2'
 
@@ -149,5 +149,24 @@ describe('Header', () => {
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
     endPulseCycle(indicator)
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
+  })
+
+  it('shows no build label unless given one, and a given one at its end', () => {
+    expect(createHeader().querySelector('.header__build')).toBeNull()
+
+    const header = createHeader('Build 24 (b99e44e) · https://juicebot-view-mcp-dev.3dg.io/mcp')
+    expect(header.lastElementChild.textContent).toBe('Build 24 (b99e44e) · https://juicebot-view-mcp-dev.3dg.io/mcp')
+  })
+})
+
+describe('build label', () => {
+  it('is the build number and the MCP connector URL a deploy baked in', () => {
+    expect(buildLabel({ VITE_BUILD: '24 (b99e44e)', VITE_MCP_URL: 'https://juicebot-view-mcp-dev.3dg.io/mcp' }))
+      .toBe('Build 24 (b99e44e) · https://juicebot-view-mcp-dev.3dg.io/mcp')
+    expect(buildLabel({ VITE_BUILD: '24 (b99e44e-dirty)' })).toBe('Build 24 (b99e44e-dirty)')
+  })
+
+  it('is absent with no build number, as in npm run dev', () => {
+    expect(buildLabel({ VITE_MCP_URL: 'https://juicebot-view-mcp-dev.3dg.io/mcp' })).toBeUndefined()
   })
 })

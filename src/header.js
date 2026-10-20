@@ -9,11 +9,13 @@ const pulseAgain = new WeakSet()
 
 /**
  * The Header: the strip above juicebox.js holding what the Page shows about itself.
- * It starts in the no-Room state, its Room indicator grey.
+ * It starts in the no-Room state, its Room indicator grey. A deployed dev build also shows
+ * its build label at the right end.
  *
+ * @param {string} [build] the build label, e.g. `Build 24 (b99e44e) · https://…/mcp`
  * @returns {HTMLElement}
  */
-export function createHeader() {
+export function createHeader(build) {
   const header = document.createElement('header')
   header.className = 'header'
 
@@ -65,7 +67,27 @@ export function createHeader() {
 
   join.append(link, copy)
   header.append(indicator, status, join)
+
+  if (build) {
+    const label = document.createElement('p')
+    label.className = 'header__build'
+    label.textContent = build
+    header.append(label)
+  }
   return header
+}
+
+/**
+ * The build label of a deployed dev build: its build number and the MCP connector URL of the
+ * juicebox-mcp Worker it pairs with. Both are baked in by juicebox-mcp's deploy script; with
+ * no build number, as in `npm run dev`, there is no label.
+ *
+ * @param {{ VITE_BUILD?: string, VITE_MCP_URL?: string }} env import.meta.env
+ * @returns {string | undefined}
+ */
+export function buildLabel({ VITE_BUILD, VITE_MCP_URL }) {
+  if (!VITE_BUILD) return undefined
+  return [`Build ${VITE_BUILD}`, VITE_MCP_URL].filter(Boolean).join(' · ')
 }
 
 /**

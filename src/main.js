@@ -4,13 +4,13 @@ import 'juicebox.js/dist/css/juicebox.css'
 import 'font-awesome/css/font-awesome.css'
 import './styles/page.scss'
 import { attachRemote } from '@aidenlab/juicebox-remote'
-import { createHeader, showRoom, showToolCall } from './header.js'
+import { buildLabel, createHeader, showRoom, showToolCall } from './header.js'
 import { followRoom } from './roomStatus.js'
 
 const page = document.querySelector('.page')
 const panelsElement = document.querySelector('.page__panels')
 
-const header = createHeader()
+const header = createHeader(buildLabel(import.meta.env))
 page.prepend(header)
 
 // A Join link's Page is connecting from the start, not in no Room while juicebox.js starts.
