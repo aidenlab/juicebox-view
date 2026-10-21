@@ -14,8 +14,12 @@ _Avoid_: viewer, app, embed, client, host (juicebox-mcp's word for any page that
 One juicebox.js contact-map viewer inside a Page. A Page holds one or more, ordered left to right.
 _Avoid_: browser, map, view
 
+**Juicebox Panel Controls**:
+Everything juicebox.js draws across the top of a Panel, above its contact map: the map's title and menu, the locus box, the resolution, colour-scale and normalization widgets. Shown or hidden for every Panel at once, and alike on every Page in a Room. juicebox.js calls this its navbar.
+_Avoid_: navbar, controls (alone), toolbar, widgets
+
 **Header**:
-The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, and the Room's Join link. The only part of the Page that is not juicebox.js.
+The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, the Room's Join link, and the button that hides and shows the Juicebox Panel Controls. The only part of the Page that is not juicebox.js.
 _Avoid_: navbar, toolbar, controls, room widget
 
 **Room indicator**:
@@ -33,7 +37,7 @@ A URL carrying `?session=`; opening it reproduces the view with no server involv
 _Avoid_: share URL, shareable URL, session link
 
 **Room**:
-A live relay channel on the juicebox-mcp server that Pages join, identified by a room id.
+A live relay channel on the juicebox-mcp server that Pages join, identified by a room id. Each conversation in the MCP client drives one Room, its own unless it joins another's; Rooms are otherwise isolated from one another.
 _Avoid_: session, channel
 
 **Join link**:
