@@ -1,11 +1,38 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { createHeader, showRoom, showToolCall } from '../src/header.js'
+import { createHeader, followPanelControls, showRoom, showToolCall } from '../src/header.js'
 
 const LINK = 'http://localhost:5173/?room=k3x9q2'
 
 /** Ends one cycle of the Room indicator's pulse, as the browser does. @param {HTMLElement} indicator */
 function endPulseCycle(indicator) {
   indicator.dispatchEvent(new Event('animationiteration'))
+}
+
+/**
+ * A stand-in for juicebox.js's registry-level navbar API: the setter, the getter and the
+ * change event it posts on its global EventBus.
+ *
+ * @param {boolean} visible whether the Juicebox Panel Controls start shown
+ */
+function fakeJuicebox(visible = true) {
+  const subscribers = []
+  const globalBus = {
+    subscribe: (type, handler) => { if (type === 'NavbarVisibilityChange') subscribers.push(handler) },
+  }
+  return {
+    EventBus: { globalBus },
+    isNavbarVisible: () => visible,
+    setNavbarVisible(value) {
+      if (value === visible) return
+      visible = value
+      for (const handler of subscribers) handler({ type: 'NavbarVisibilityChange', data: { visible } })
+    },
+  }
+}
+
+/** @param {HTMLElement} header */
+function panelControlsButton(header) {
+  return header.querySelector('.header__panel-controls')
 }
 
 /** @param {HTMLElement} header */
@@ -149,5 +176,55 @@ describe('Header', () => {
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(true)
     endPulseCycle(indicator)
     expect(indicator.classList.contains('room-indicator--pulsing')).toBe(false)
+  })
+
+  it('has a button for the Juicebox Panel Controls, not clickable until juicebox.js has initialised', () => {
+    const header = createHeader()
+    expect(panelControlsButton(header).disabled).toBe(true)
+
+    followPanelControls(header, fakeJuicebox())
+    expect(panelControlsButton(header).disabled).toBe(false)
+    expect(panelControlsButton(header).textContent).toBe('Hide controls')
+    expect(panelControlsButton(header).getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('the Header\'s button hides the Juicebox Panel Controls, then shows them again', () => {
+    const header = createHeader()
+    const juicebox = fakeJuicebox()
+    followPanelControls(header, juicebox)
+    const button = panelControlsButton(header)
+
+    button.click()
+    expect(juicebox.isNavbarVisible()).toBe(false)
+    expect(button.textContent).toBe('Show controls')
+    expect(button.getAttribute('aria-expanded')).toBe('false')
+
+    button.click()
+    expect(juicebox.isNavbarVisible()).toBe(true)
+    expect(button.textContent).toBe('Hide controls')
+    expect(button.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('reads "Show controls" when juicebox.js started with them hidden, as from a Snapshot link', () => {
+    const header = createHeader()
+    followPanelControls(header, fakeJuicebox(false))
+
+    expect(panelControlsButton(header).textContent).toBe('Show controls')
+    expect(panelControlsButton(header).getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('follows the Juicebox Panel Controls when something other than a click hides them, as the Remote does', () => {
+    const header = createHeader()
+    const juicebox = fakeJuicebox()
+    followPanelControls(header, juicebox)
+
+    juicebox.setNavbarVisible(false)
+    expect(panelControlsButton(header).textContent).toBe('Show controls')
+    expect(panelControlsButton(header).getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('the Header\'s button names the Panels whose Juicebox Panel Controls it hides', () => {
+    const header = createHeader()
+    expect(panelControlsButton(header).getAttribute('aria-controls')).toBe('panels')
   })
 })

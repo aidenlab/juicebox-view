@@ -1,6 +1,9 @@
 /** What the Header says while the Page is in no Room. */
 const NOT_IN_A_ROOM = 'Not in a room. Ask Claude to open Juicebox.'
 
+/** The id of the element holding the Panels, whose Juicebox Panel Controls the Header's button hides. */
+const PANELS_ID = 'panels'
+
 /** How long Copy says Copied, in milliseconds. */
 const COPIED_FOR = 1500
 
@@ -64,7 +67,16 @@ export function createHeader() {
   })
 
   join.append(link, copy)
-  header.append(indicator, status, join)
+
+  // Hides and shows the Juicebox Panel Controls; clickable once juicebox.js has initialised.
+  const panelControls = document.createElement('button')
+  panelControls.className = 'header__panel-controls'
+  panelControls.type = 'button'
+  panelControls.disabled = true
+  panelControls.setAttribute('aria-controls', PANELS_ID)
+  labelPanelControlsButton(panelControls, true)
+
+  header.append(indicator, status, join, panelControls)
   return header
 }
 
@@ -82,6 +94,34 @@ export function showRoom(header, { indicator, text, joinLink }) {
   header.querySelector('.header__status').textContent = text
   header.querySelector('.header__join').hidden = !joinLink
   header.querySelector('.header__join-link').value = joinLink ?? ''
+}
+
+/**
+ * Makes the Header's button hide and show the Juicebox Panel Controls on every Panel.
+ * A click goes to juicebox.js's setter; the label follows juicebox.js's change event, so it
+ * stays right whatever changed the state.
+ *
+ * @param {HTMLElement} header from createHeader
+ * @param {typeof import('juicebox.js').default} juicebox after juicebox.init
+ */
+export function followPanelControls(header, juicebox) {
+  const button = header.querySelector('.header__panel-controls')
+  button.addEventListener('click', () => juicebox.setNavbarVisible(!juicebox.isNavbarVisible()))
+  juicebox.EventBus.globalBus.subscribe('NavbarVisibilityChange', ({ data }) => labelPanelControlsButton(button, data.visible))
+  // A Snapshot link saved while hidden has already hidden them in juicebox.init.
+  labelPanelControlsButton(button, juicebox.isNavbarVisible())
+  button.disabled = false
+}
+
+/**
+ * Labels the Header's button for whether the Juicebox Panel Controls are shown.
+ *
+ * @param {HTMLButtonElement} button
+ * @param {boolean} visible
+ */
+function labelPanelControlsButton(button, visible) {
+  button.textContent = visible ? 'Hide controls' : 'Show controls'
+  button.setAttribute('aria-expanded', String(visible))
 }
 
 /**
