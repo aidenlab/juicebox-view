@@ -29,6 +29,6 @@
   "dependencies": {
     "@aidenlab/juicebox-remote": "2.0.0",
     "font-awesome": "^4.7.0",
-    "juicebox.js": "^4.11.0"
+    "juicebox.js": "^4.12.0"
   }
 }

@@ -72,7 +72,8 @@ body {
     color: $status-colour;
   }
 
-  &__copy {
+  &__copy,
+  &__panel-controls {
     flex: none;
     padding: 2px 8px;
     border: 1px solid $border-colour;
@@ -81,6 +82,10 @@ body {
     font-family: $font;
     font-size: $font-size;
     cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+    }
   }
 }
 
