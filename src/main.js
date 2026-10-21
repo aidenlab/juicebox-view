@@ -26,9 +26,10 @@ if (import.meta.env.DEV) {
 }
 
 // juicebox.js reads a Snapshot link's ?session= itself; with none, it shows one empty Panel.
-// The config is empty because juicebox-mcp's tools need nothing in it: each Panel takes its
-// genome from the map it loads, and a gene name in a locus is looked up by that genome.
-await juicebox.init(panelsElement, {})
+// The config holds nothing for juicebox-mcp's tools: each Panel takes its genome from the map
+// it loads, and a gene name in a locus is looked up by that genome. It starts the Juicebox Panel
+// Controls hidden; a Snapshot link replaces the whole config, so it keeps the state it saved.
+await juicebox.init(panelsElement, { navbarVisible: false })
 followPanelControls(header, juicebox)
 
 // A Join link joins its Room; after juicebox.init, so that a Snapshot link opened with it only
