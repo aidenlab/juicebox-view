@@ -38,6 +38,7 @@ sequenceDiagram
 3. **The Page joins the Room.** It opens a WebSocket to `/ws?room=<id>`. The Worker refuses any Origin not in `ALLOWED_ORIGINS` and hands the socket to that Room's Durable Object. The Room indicator turns green and the status reads `Joined room <id>`.
 4. **The model runs a tool.** For `load_map` or `goto_locus`, the Room first sends every Page a toolCall notice, which pulses the Room indicator. Then it sends the command. The Remote applies it to juicebox.js and acks. The tool reply is built from the first ack.
 5. **The test checks the Page.** It checks that the indicator pulsed and is labelled `Last tool: goto_locus`, and that juicebox.js's locus box shows the new locus.
+6. **The Juicebox Panel Controls follow the Room.** The model hides them with `show_panel_controls`, and the Header button then reads `Show controls`. More Pages open the Join link: each opens with the Room's state, and a click on one Page's Header button shows or hides them on the others.
 
 ## When a tool reply goes wrong
 
