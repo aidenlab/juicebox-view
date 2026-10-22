@@ -92,3 +92,68 @@ describe('round trip', () => {
     expect(panel.bottom).toBeLessThanOrEqual(window)
   })
 })
+
+describe('the Juicebox Panel Controls across the Room', () => {
+  /** A second Page in the Room, opened by these tests, and its browser. */
+  let secondBrowser
+  let second
+
+  /** @param {import('playwright').Page} onPage */
+  const panelControlsButton = (onPage) => onPage.locator('.header__panel-controls')
+
+  /**
+   * Expects a Page to show or hide its Juicebox Panel Controls, and its Header button to say so.
+   *
+   * @param {import('playwright').Page} onPage
+   * @param {boolean} shown
+   */
+  async function expectPanelControls(onPage, shown) {
+    await expect.poll(() => panelControlsButton(onPage).textContent()).toBe(shown ? 'Hide controls' : 'Show controls')
+    expect(await onPage.locator('.hic-navbar-container').first().isVisible()).toBe(shown)
+  }
+
+  afterAll(() => secondBrowser?.close())
+
+  it('the model hides them, and the Header button then reads "Show controls"', async () => {
+    // The Page starts with them hidden; the model shows them first, so hiding them changes something.
+    expectAcked(await callTool(mcpSession, 'show_panel_controls', { show: true }))
+    await expectPanelControls(page, true)
+
+    expectAcked(await callTool(mcpSession, 'show_panel_controls', { show: false }))
+    await expectPanelControls(page, false)
+  })
+
+  it('a Page that joins the Room while they are hidden opens with them hidden', async () => {
+    ;({ browser: secondBrowser, page: second } = await openPage(joinLink))
+    await second.locator('.room-indicator--joined').waitFor()
+    // A Page opens with them hidden anyway; it has the Room's state once it shows the Room's map.
+    await expect.poll(() => second.locator('.hic-chromosome-goto-container input').inputValue(), { timeout: 30_000 }).toContain('chr8:127,000,001-129,000,000')
+    // juicebox.js selects a restored Panel only once its map has loaded; until then it has no
+    // current Panel, and its setNavbarVisible does nothing, so the Header button would too.
+    await second.locator('.hic-root-selected').waitFor({ timeout: 30_000 })
+
+    await expectPanelControls(second, false)
+  })
+
+  it("the Header button on one Page shows and hides them on the Room's other Page", async () => {
+    await panelControlsButton(second).click()
+    await expectPanelControls(page, true)
+
+    await panelControlsButton(page).click()
+    await expectPanelControls(second, false)
+  })
+
+  // Every Page opens with them hidden, so only joining a Room that shows them proves the Room's state reaches it.
+  it('a Page that joins the Room while they are shown opens with them shown', async () => {
+    expectAcked(await callTool(mcpSession, 'show_panel_controls', { show: true }))
+    await expectPanelControls(page, true)
+
+    const { browser: thirdBrowser, page: third } = await openPage(joinLink)
+    try {
+      await third.locator('.room-indicator--joined').waitFor()
+      await expectPanelControls(third, true)
+    } finally {
+      await thirdBrowser.close()
+    }
+  })
+})
