@@ -48,16 +48,6 @@ describe('round trip', () => {
     expect(await page.locator('.header__status').textContent()).toBe(`Joined room ${room}`)
   })
 
-  it('the Header shows the Join link, and Copy puts it on the clipboard', async () => {
-    const link = page.locator('.header__join-link')
-    await link.waitFor()
-    expect(await link.inputValue()).toBe(joinLink)
-
-    await page.locator('.header__copy').click()
-    await page.locator('.header__copy', { hasText: 'Copied' }).waitFor()
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(joinLink)
-  })
-
   it('a tool the model runs moves the Panel, is acked, and pulses the Room indicator', async () => {
     const loaded = await callTool(mcpSession, 'load_map', { url: MAP_URL, name: 'ENCFF555ISR' })
     expectAcked(loaded)

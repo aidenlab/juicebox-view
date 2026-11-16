@@ -48,31 +48,6 @@ body {
     color: $status-colour;
   }
 
-  &__join {
-    display: flex;
-    flex: 0 1 360px;
-    gap: 4px;
-    min-width: 0;
-
-    // display: flex would otherwise outrank the hidden attribute. Hidden, it keeps its height,
-    // so the Header is as tall out of a Room as in one.
-    &[hidden] {
-      visibility: hidden;
-    }
-  }
-
-  &__join-link {
-    flex: 1;
-    min-width: 0;
-    padding: 2px 4px;
-    border: 1px solid $border-colour;
-    border-radius: 4px;
-    font-family: $font;
-    font-size: $font-size;
-    color: $status-colour;
-  }
-
-  &__copy,
   &__panel-controls {
     flex: none;
     padding: 2px 8px;

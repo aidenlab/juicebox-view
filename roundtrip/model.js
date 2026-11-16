@@ -3,7 +3,7 @@
  * the model's Join link opens, in a headless browser.
  */
 import { chromium } from 'playwright'
-import { PAGE_URL, WORKER_URL } from './addresses.js'
+import { WORKER_URL } from './addresses.js'
 
 /**
  * @typedef {object} ToolReply A tool reply as it comes.
@@ -61,7 +61,7 @@ export async function callTool(mcpSession, name, args = {}) {
 }
 
 /**
- * Opens a Join link in a headless browser that lets the Page use the clipboard.
+ * Opens a Join link in a headless browser.
  *
  * @param {string} joinLink
  * @returns {Promise<{ browser: import('playwright').Browser, page: import('playwright').Page }>}
@@ -71,7 +71,6 @@ export async function openPage(joinLink) {
   // ENCODE answers 403 to a browser that says it is headless, so this one does not say so.
   const userAgent = (await browser.newPage().then((blank) => blank.evaluate(() => navigator.userAgent))).replace('HeadlessChrome', 'Chrome')
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, userAgent })
-  await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: PAGE_URL })
   const page = await context.newPage()
   await page.goto(joinLink)
   return { browser, page }

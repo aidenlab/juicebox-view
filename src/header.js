@@ -4,9 +4,6 @@ const NOT_IN_A_ROOM = 'Not in a room. Ask Claude to open Juicebox.'
 /** The id of the element holding the Panels, whose Juicebox Panel Controls the Header's button hides. */
 const PANELS_ID = 'panels'
 
-/** How long Copy says Copied, in milliseconds. */
-const COPIED_FOR = 1500
-
 /** Room indicators that a tool call reached mid-pulse, owed one more pulse. */
 const pulseAgain = new WeakSet()
 
@@ -36,38 +33,6 @@ export function createHeader() {
   status.setAttribute('role', 'status')
   status.textContent = NOT_IN_A_ROOM
 
-  // The Join link and its Copy button, hidden until the Page has joined a Room.
-  const join = document.createElement('div')
-  join.className = 'header__join'
-  join.hidden = true
-
-  const link = document.createElement('input')
-  link.className = 'header__join-link'
-  link.readOnly = true
-  link.setAttribute('aria-label', 'Join link')
-  link.addEventListener('click', () => link.select())
-
-  const copy = document.createElement('button')
-  copy.className = 'header__copy'
-  copy.type = 'button'
-  copy.textContent = 'Copy'
-  let copiedTimer
-  copy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(link.value)
-    } catch {
-      // Refused the clipboard, or given none outside a secure context: the person copies it.
-      link.focus()
-      link.select()
-      return
-    }
-    copy.textContent = 'Copied'
-    clearTimeout(copiedTimer)
-    copiedTimer = setTimeout(() => { copy.textContent = 'Copy' }, COPIED_FOR)
-  })
-
-  join.append(link, copy)
-
   // Hides and shows the Juicebox Panel Controls; clickable once juicebox.js has initialised.
   const panelControls = document.createElement('button')
   panelControls.className = 'header__panel-controls'
@@ -76,24 +41,21 @@ export function createHeader() {
   panelControls.setAttribute('aria-controls', PANELS_ID)
   labelPanelControlsButton(panelControls, true)
 
-  header.append(indicator, status, join, panelControls)
+  header.append(indicator, status, panelControls)
   return header
 }
 
 /**
- * Shows the Room in the Header: the Room indicator's colour, the status text and, when
- * there is one, the Join link.
+ * Shows the Room in the Header: the Room indicator's colour and the status text.
  *
  * @param {HTMLElement} header from createHeader
  * @param {import('./roomStatus.js').RoomStatus} view
  */
-export function showRoom(header, { indicator, text, joinLink }) {
+export function showRoom(header, { indicator, text }) {
   const dot = header.querySelector('.room-indicator')
   dot.classList.remove('room-indicator--connecting', 'room-indicator--joined', 'room-indicator--expired')
   dot.classList.add(`room-indicator--${indicator}`)
   header.querySelector('.header__status').textContent = text
-  header.querySelector('.header__join').hidden = !joinLink
-  header.querySelector('.header__join-link').value = joinLink ?? ''
 }
 
 /**
