@@ -28,7 +28,7 @@ In `npm run dev`, contact maps on ENCODE and the other hosts that refuse a brows
 
 ## The round trip
 
-`npm run test:roundtrip` is the end-to-end test: it builds the Page as it is deployed, serves it at `localhost:4183`, starts a juicebox-mcp Worker under `wrangler dev` at `localhost:8797`, and stops both when it is done. In a headless Chromium it opens the Join link the model gets from `get_juicebox_url`, waits for the Room indicator to turn green, checks the Join link and Copy, then runs `load_map` and `goto_locus` through the Worker's `/mcp` and checks that both are acked, that the Room indicator pulses and that the Panel shows the new locus. Then it hides and shows the Juicebox Panel Controls with `show_panel_controls` and the Header button, and checks that a second and third Page in the Room follow. Its ports are not the development ones, so it runs beside `npm run dev` and a local Worker on 8787.
+`npm run test:roundtrip` is the end-to-end test: it builds the Page as it is deployed, serves it at `localhost:4183`, starts a juicebox-mcp Worker under `wrangler dev` at `localhost:8797`, and stops both when it is done. In a headless Chromium it opens the Join link the model gets from `get_juicebox_url`, waits for the Room indicator to turn green, then runs `load_map` and `goto_locus` through the Worker's `/mcp` and checks that both are acked, that the Room indicator pulses and that the Panel shows the new locus. Then it hides and shows the Juicebox Panel Controls with `show_panel_controls` and the Header button, and checks that a second and third Page in the Room follow. Its ports are not the development ones, so it runs beside `npm run dev` and a local Worker on 8787.
 
 It is slow and not hermetic: juicebox.js reads its contact map from ENCODE.
 

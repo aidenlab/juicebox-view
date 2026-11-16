@@ -19,7 +19,7 @@ Everything juicebox.js draws across the top of a Panel, above its contact map: t
 _Avoid_: navbar, controls (alone), toolbar, widgets
 
 **Header**:
-The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, the Room's Join link, and the button that hides and shows the Juicebox Panel Controls. The only part of the Page that is not juicebox.js.
+The strip across the top of the Page, above and apart from juicebox.js, holding everything the Page shows about itself rather than about the maps: whether it is in a Room, and the button that hides and shows the Juicebox Panel Controls. The only part of the Page that is not juicebox.js.
 _Avoid_: navbar, toolbar, controls, room widget
 
 **Room indicator**:

@@ -23,7 +23,7 @@ sequenceDiagram
     Test->>Page: open Join link
     Page->>Worker: join Room over /ws (Origin checked against ALLOWED_ORIGINS)
     Worker-->>Page: joined
-    Test->>Page: Room indicator green, Join link + Copy
+    Test->>Page: Room indicator green
 
     Test->>Worker: load_map, goto_locus via /mcp
     Worker->>Page: toolCall notice (names the tool)
